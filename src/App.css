@@ -11,6 +11,15 @@ body{
     table-layout: fixed;
     width: 100%;
   }
+  .table-row-fade {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  
+  .table-row-fade.fade-out {
+    opacity: 0;
+  }
+  
   
   .App table td {
     white-space: nowrap;

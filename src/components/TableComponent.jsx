@@ -2,8 +2,8 @@ import React from 'react';
 import { Button, Table } from 'antd';
 import useActGeneration from '../hooks/useActGeneration';
 import Loader from '../components/UI/Loader/Loader';
-
-function TableComponent({ dataSource, setDataSource, columns, setColumns, isDataLoading, handleDelete }) {
+import '../App.css';
+function TableComponent({ dataSource, setDataSource, columns, setColumns, isDataLoading, handleDelete, deletedIndex }) {
   const { generateAct, isActGenerated } = useActGeneration(
     dataSource,
     setDataSource,
@@ -11,13 +11,17 @@ function TableComponent({ dataSource, setDataSource, columns, setColumns, isData
     setColumns
   );
 
+  const handleDeleteRow = (index) => {
+    handleDelete(index);
+  };
+
   const columnsWithDelete = [
     ...columns,
     {
       title: 'Действия',
       key: 'actions',
       render: (_, record, index) => (
-        <Button type="link" danger onClick={() => handleDelete(index)}>
+        <Button type="link" danger onClick={() => handleDeleteRow(index)}>
           Удалить
         </Button>
       ),
@@ -35,6 +39,7 @@ function TableComponent({ dataSource, setDataSource, columns, setColumns, isData
           style={{ marginTop: 20 }}
           dataSource={dataSource}
           columns={columnsWithDelete}
+          rowClassName={(record, index) => (index === deletedIndex ? 'table-row-fade fade-out' : 'table-row-fade')}
         />
       )}
       <Button

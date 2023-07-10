@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
 import DataService from './API/DataService';
 import TableComponent from './components/TableComponent';
-import "./App.css"
+import './App.css';
+import useFilteredData from './hooks/useFilteredData';
+import useDeleteItem from './hooks/useDeleteItem';
 
 function App() {
   const [dataSource, setDataSource] = useState([]);
-  const [columns, setColumns] = useState(DataService.getInitColums);
+  const [columns, setColumns] = useState(DataService.getInitColums());
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [deletedIndex, setDeletedIndex] = useState(null);
   useEffect(() => {
     fetchData();
   }, []);
@@ -26,24 +28,9 @@ function App() {
     }
   };
 
-  const searchedData = useMemo(() => {
-    return dataSource.filter(eqp => eqp.name.includes(searchQuery));
-  }, [searchQuery, dataSource]);
+  const filteredData = useFilteredData(dataSource, searchQuery);
+  const handleDelete = useDeleteItem(dataSource, setDataSource, setDeletedIndex);
 
-  const handleDelete = async (index) => {
-    try {
-      const deletedItem = dataSource[index];
-      console.log(deletedItem.id)
-      await DataService.deleteItem(deletedItem.id); 
-      
-      const updatedDataSource = [...dataSource];
-      updatedDataSource.splice(index, 1);
-      setDataSource(updatedDataSource);
-    } catch (error) {
-      console.error('Ошибка при удалении:', error);
-    }
-  };
-  
 
   return (
     <div className='App'>
@@ -51,15 +38,16 @@ function App() {
         style={{ width: 200 }}
         placeholder='Поиск'
         value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
       <TableComponent
-        dataSource={searchedData}
+        dataSource={filteredData}
         setDataSource={setDataSource}
         columns={columns}
         setColumns={setColumns}
         isDataLoading={isDataLoading}
-        handleDelete={handleDelete}
+        handleDelete ={handleDelete}
+        deletedIndex={deletedIndex}
       />
     </div>
   );
