@@ -1,23 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { Button,Table } from 'antd';
+import DataService from './API/DataService';
+import { useEffect, useState } from 'react';
+import Loader from './components/UI/Loader/Loader';
+import useActGeneration from './hooks/useActGeneration';
+import "./App.css"
 
 function App() {
+  const [dataSource, setDataSource] = useState([]);
+  const [columns, setColumns] = useState(DataService.getInitColums);
+  const [isDataLoading, setIsDataLoadind] = useState(false);
+  
+  const { generateAct, isActGenerated } = useActGeneration(dataSource, setDataSource, columns, setColumns);
+
+  async function fetchData() {
+    setIsDataLoadind(true);
+    setTimeout(async () => {
+      const response = await DataService.getAll();
+      setDataSource(response.data);
+      setIsDataLoadind(false);
+    }, 1000);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className='App'>
+      
+      {isDataLoading ? (
+        <div className='load'
         >
-          Learn React
-        </a>
-      </header>
+          <Loader />
+        </div>
+      ) : (
+        <Table dataSource={dataSource} columns={columns} />
+      )}
+      <Button style={{color: "#1677ff"}} onClick={generateAct} disabled={isActGenerated}>
+        Получить акт выбытия
+      </Button>
     </div>
   );
 }
