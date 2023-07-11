@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Table } from 'antd';
 import useActGeneration from '../hooks/useActGeneration';
 import Loader from '../components/UI/Loader/Loader';
-import '../App.css';
+
 function TableComponent({ dataSource, setDataSource, columns, setColumns, isDataLoading, handleDelete, deletedIndex }) {
   const { generateAct, isActGenerated } = useActGeneration(
     dataSource,
@@ -11,19 +11,16 @@ function TableComponent({ dataSource, setDataSource, columns, setColumns, isData
     setColumns
   );
 
-  const handleDeleteRow = (index) => {
-    handleDelete(index);
-  };
-
   const columnsWithDelete = [
     ...columns,
     {
       title: 'Действия',
       key: 'actions',
       render: (_, record, index) => (
-        <Button type="link" danger onClick={() => handleDeleteRow(index)}>
+        <Button type="link"  danger onClick={() => handleDelete(index)}>
           Удалить
         </Button>
+
       ),
     },
   ];

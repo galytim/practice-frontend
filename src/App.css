@@ -32,6 +32,9 @@ body{
   background-color: #1677ff74;
   
 }
+.App table td:last-child {
+  background-color: white;
+}
 .load{
      display: flex;
      justify-content:  center;
