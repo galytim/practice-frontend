@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Select } from 'antd';
+import { Input, Select,Button } from 'antd';
 import DataService from './API/DataService';
 import TableComponent from './components/TableComponent';
 import './App.css';
 import useFilteredData from './hooks/useFilteredData';
 import useDeleteItem from './hooks/useDeleteItem';
+import MyModal from './components/UI/myModal/MyModal';
 
 function App() {
   const [dataSource, setDataSource] = useState([]);
@@ -31,7 +32,7 @@ function App() {
 
   const filteredData = useFilteredData(dataSource, searchQuery);
   const handleDelete = useDeleteItem(dataSource, setDataSource, setDeletedIndex);
-
+  const [modal, setModal] = useState(false)
   const [sort,setSort] = useState("name");
 
   const compareEquipmentNames = (nameA, nameB) => {
@@ -39,7 +40,7 @@ function App() {
   
     const numbersA = nameA.match(regex).map(Number);
     const numbersB = nameB.match(regex).map(Number);
-  
+   
     // Сравниваем числа поэлементно
     for (let i = 0; i < Math.min(numbersA.length, numbersB.length); i++) {
       if (numbersA[i] < numbersB[i]) {
@@ -88,6 +89,10 @@ function App() {
 
   return (
     <div className='App'>
+      <MyModal visible={modal}
+               setVisible={setModal}
+       >
+        </MyModal>
       <Input
         style={{ width: 200 }}
         placeholder='Поиск'
@@ -108,7 +113,8 @@ function App() {
           { value: 'regulatoryTermServices', label: 'Нормативный срок службы' },
         ]}
       />
-
+      <Button onClick={() => setModal(true)}> Добавить новое оборудование</Button>
+        
       <TableComponent
         dataSource={filteredData}
         setDataSource={setDataSource}
